@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+}
+
+group 'qa.guru'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+    testImplementation(
+            'com.codeborne:selenide:6.18.0',
+            'org.junit.jupiter:junit-jupiter:5.10.0',
+            'com.github.javafaker:javafaker:1.0.2'
+    )
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Задача для запуска тестов с тегом "Smoke" - ./gradlew Smoke
+tasks.register('Smoke', Test) {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        exceptionFormat "full"
+    }
+    useJUnitPlatform {
+        includeTags("Smoke")
+    }
+}
+
+// Задача для запуска тестов с тегом "Regress" - ./gradlew Regress
+tasks.register('Regress', Test) {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        exceptionFormat "full"
+    }
+    useJUnitPlatform {
+        includeTags("Regress")
+    }
+}
