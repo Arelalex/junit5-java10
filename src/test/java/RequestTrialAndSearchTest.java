@@ -2,22 +2,27 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import pages.WorkWithSiteMine;
+import pages.FreeTrialPage;
+import pages.MainPage;
+import pages.SearchPage;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 public class RequestTrialAndSearchTest extends TestBase {
-    WorkWithSiteMine workWithSiteMine = new WorkWithSiteMine();
+    MainPage mainPage = new MainPage();
+    FreeTrialPage freeTrialPage = new FreeTrialPage();
+    SearchPage searchPage = new SearchPage();
 
     @ValueSource(strings = {"alex1@gmail.com", "alex2@gmail.com", "alex3@gmail.com"})
     @ParameterizedTest(name = "Request Start Trial for {0}")
     @Tags({@Tag("Regress"), @Tag("Smoke")})
     void successfulRequestStartTrial(String email) {
-        workWithSiteMine.openPage()
+        mainPage.openPage()
                         .setEmail(email)
-                        .submit()
-                        .checkTitle("Sign up for a free trial");
+                        .submit();
+
+        freeTrialPage.checkTitle("Sign up for a free trial");
     }
 
     @CsvSource(value = {
@@ -28,18 +33,20 @@ public class RequestTrialAndSearchTest extends TestBase {
     @ParameterizedTest(name = "Look for link {0} for query {1}")
     @Tag("Smoke")
     void checkSearchFromSource(String expectedLink, String searchQuery) {
-        workWithSiteMine.openPage()
-                        .doSearch(searchQuery)
-                        .checkLink(expectedLink);
+        mainPage.openPage()
+                .doSearch(searchQuery);
+
+        searchPage.checkLink(expectedLink);
     }
 
    @CsvFileSource(resources = "/searchData.csv")
    @ParameterizedTest(name = "Look for link {0} for query {1}")
    @Tag("Regress")
    void checkSearchFromFile(String expectedLink, String searchQuery) {
-       workWithSiteMine.openPage()
-               .doSearch(searchQuery)
-               .checkLink(expectedLink);
+       mainPage.openPage()
+               .doSearch(searchQuery);
+
+       searchPage.checkLink(expectedLink);
    }
 
     static Stream<Arguments> checkSearchFromStream(){
@@ -58,8 +65,9 @@ public class RequestTrialAndSearchTest extends TestBase {
     @ParameterizedTest(name = "Check results {1} for query {0}")
     @Tag("Regress")
     void checkSearchFromStream(String searchQuery, List<String> expectedLinks) {
-        workWithSiteMine.openPage()
-                .doSearch(searchQuery)
-                .checkSearch(expectedLinks);
+        mainPage.openPage()
+                .doSearch(searchQuery);
+
+        searchPage.checkSearch(expectedLinks);
     }
 }
